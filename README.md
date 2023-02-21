@@ -22,22 +22,25 @@ Realizar el ciclo de vida de un proyecto de **Machine Learning**, contemplando e
 - Ingesta de datos de streaming en sus respectivos dataframes (Disney, Amazon, Hulu y Netflix).
 - Análisis exploratorio de los distintos datasets para conocer sus características principales.
 - Generación del campo ID.
-- Unificación  de las 4 plataformas a través de la función 'concat' en un dataframe único "df".
+- Unificación  de las 4 plataformas a través de la función 'concat' en un dataframe único "df".
 - Reemplazo valores nulos del campo Rating por "g".
 - Conversión de date_added al formato adecuado (AAAA-mm-dd).
-- Conversión de campos de textos a minuscula.
+- Conversión de campos de textos a minúscula.
 - Separación de columna 'duration' en dos ("duration_int" y "duration_type").
 - Unificación de season y seasons en 'season' en la columna 'duration_type'.
 - Ingesta de los 8 archivos csv que contienen los Scores de los usuarios en sus respectivos dataframes.
 - Unificación de los 8 archivos a través de la función 'concat' en un dataframe único "scoredf".
 - Conversión de timestamp al formato adecuado (AAAA-mm-dd).
 - Renombramos las columnas 'rating':'score', 'timestamp':'scoreDate' y'movieId':'id'.
-- Creación de una columna nueva con el score promedio de cada pelicula.
+- Creación de una columna nueva con el score promedio de cada película.
 - Unificación de los dataframes (df y scoredf) en un solo dataframe (dffinal). Usando como relación la columna 'id'.
 - Creación de un dataframe nuevo (df_consultas) enfocado en la API de consultas usando como base el 'dffinal'.
-- Eliminación de los duplicado de la columna 'id' (la cual hace referecia a la película) quedandonos únicamente con 22998 valores únicos.
-- Exportarmos 'df_consultas' en un archivo csv.
+- Eliminación de los duplicados de la columna 'id' (la cual hace referencia a la película) quedándonos únicamente con 22998 valores únicos.
+- Exportamos 'df_consultas' en un archivo csv.
 - Exportamos 'dffinal' en un archivo .parquet.
+
+#### [Archivo Jupiter con el proceso de ETL](https://github.com/roprz/PI_1_Henry/blob/main/ETL/ETL.ipynb "ETL")
+
 
 ### Desarrollo de las consultas solicitadas:
 
@@ -52,69 +55,47 @@ Cantidad de películas por plataforma con filtro de PLATAFORMA.
 4. **get_actor**
 Actor que más se repite según plataforma y año.
 
-### Proceso de puesta a disposición los datos utilizando FastAPI (framework que permite construir APIs con Python) y Deta Space para realizar el deploy: 
-- Generación de archivo main.py (donde desarrollar el script) y otro requirements.txt (donde alojar los requerimientos para la API)
-- Importación de las librerías a utilizar
-- Declaración de la creación de la API 
-- Declaración de la ruta de acceso para la base de datos (df_consultas)
-- Desarrollo de las consultas con formato:
-   
-```ruby
-@app.get("/tipo_de_consulta/")
-def tipo_de_consulta(variable1:tipo_de_dato, variable"n":...):
-  desarrollo_de_la_funcion
-```
+#### [Carpeta con la que se desarrolla el API de Deta Space con la Consultas](https://github.com/roprz/PI_1_Henry/tree/main/API%20Deta%20Space "API Consultas")
 
-7. Creacion de una cuenta en Deta
-8. Instalacion del Deta CLI en consola de forma local mediante comando "iwr https://get.deta.dev/cli.ps1 -useb | iex"
-9. Comprobación de la correcta instalacion con "deta --help"
-10. Login en deta a traves de la consola mediante comando "deta login"
-11. Ubicado en el path de la carpeta donde se encuentra la API desarrollada se procede a la creacion de un micro mediante el comando "deta new"
-12. Una vez creado el micro, se realizan las pruebas correspondientes a las consultas con el endpoint URL provisto por deta.
+### API de consultas
+`Ingrese al siguiente URL:` [https://deta.space/discovery/@roprz/pi_1/exp-UHYs](https://deta.space/discovery/@roprz/pi_1/exp-UHYs)
 
-<hr>
+### Realización de EDA con ayuda de la librería Dataprep:
+- Se importó la librería dataprep y pyarrow.
+- Con ayuda de la librería pyarrow se instaló nuestro archivo dffinal.parquet en un df.
+- Tomamos una muestra del df para realizar nuestro análisis, ya que son demasiados datos para nuestra capacidad de procesamiento.
+- Creamos un reporte con ayuda de la librería dataprep (reporte_EDA.html).- Visualizamos la correlación de los datos.
+- Gracias al análisis tomó la decisión de realizar el modelo con la librería Surprise. Ya que esta sólo requiere el ID de la película, ID del usuario y Score que le otorgó a la película. Y contamos la info preparada para ello.
 
-### Instrucciones para la utilización de la herramienta: 
-`Ingrese al siguiente URL:` [https://qlprmb.deta.dev](https://qlprmb.deta.dev)
+#### [Desarrollo del EDA](https://github.com/roprz/PI_1_Henry/blob/main/EDA/EDA.ipynb "EDA")
+#### [Reporte EDA](https://github.com/roprz/PI_1_Henry/blob/main/EDA/reporte_EDA.html "Reporte EDA")
 
-Segun lo consulta que quiera solicitar, debera agregarle a continuación del URL la **consulta y variables** con el siguiente **formato**:
-- Consulta 1: .../**get_word_count/?plataforma=netflix&keyword=love**
-- Consulta 2: ...**/get_score_count/?plataform=netflix&score=85&year=2010**
-- Consulta 3: ...**/get_second_score/?plataforma=amazon**
-- Consulta 4: ...**/get_longest/?plataforma=netflix&duracion=min&anio=2016**
-- Consulta 5: ...**/get_rating_count/?rate=18%2B**
+### Sistema de Recomendación:
 
-Las variables pueden ser reemplazadas en el formato de consulta por el elemento deseado: 
-- **Plataforma**: **netflix, disney, hulu, amazon**
-- **Keyword**: puede ser reemplazado por cualquier termino deseado (la busqueda se realiza en el "titulo" de peliculas)
-- **Score**: puntaje determinado de movie/serie
-- **Year**: año de estreno de movie/serie
-- **Duracion**: tipo de duracion en **min** o **season**
-- **Rate**: rate de determinada pelicula utilizando **g** (general), **7+**, **13+**, **16+**, **18+** (*Nota: el simbola "+" debe ser reemplazado por "%2B" - Ejemplo: 18+ = 18%2B*)
+- Importamos la librerías para la lectura de nuestro dataset en formato parquet.
+- Instanciamos en un dataframe.
+- Revisamos el número de id´s únicos con los que contamos antes de tomar una fracción del dataset.
+- Tomamos una muestra al 25 por ciento (más adelante en el documento comprobé que este era el volumen de datos ideal).
+- Comprobamos que todos los id´s se encuentren en la muestra.
+- Instalación de la librería surprise para realizar el modelo.
+- Mandamos a llamar las funciones necesarias de la librería.
+- Creamos el objeto Reader con las escalas del Score.
+- Cargamos los datos en una estructura de Surprise.
+- Realizamos la división de los datos de entrenamiento y de prueba.
+- Definimos la grilla de hiper parámetros a explorar.
+- Inicializamos el objeto GridSearchCV.
+- Entrenamos el modelo.
+- Mejores hiper parámetros encontrados: {'n_factors': 50, 'n_epochs': 30, 'lr_all': 0.002, 'reg_all': 0.04}.
+- El modelo se probó con el 100, 50, 25 y 10 por ciento de los datos. Buscando la mejor accuracy.
+- Nuestro mejor resultado fue con 25%, con una media de 0.9953 de RMSE.
+- Probamos que el modelo funcione de manera correcta.
+- Exportamos nuestro modelo.
 
-<hr> 
+#### [Archivo Jupiter con el proceso de creación del modelo de ML](https://github.com/roprz/PI_1_Henry/blob/main/ML/Creacion%20del%20modelo/ML.ipynb "creación del modelo de ML")
 
-#### Ejemplos de busquedas: 
-- **Consulta 1:** https://qlprmb.deta.dev/get_word_count/?plataforma=netflix&keyword=love
-- **Consulta 2:** https://qlprmb.deta.dev/get_score_count/?plataform=netflix&score=85&year=2010
-- **Consulta 3:** https://qlprmb.deta.dev/get_second_score/?plataforma=amazon
-- **Consulta 4:** https://qlprmb.deta.dev/get_longest/?plataforma=netflix&duracion=min&anio=2016
-- **Consulta 5:** https://qlprmb.deta.dev/get_rating_count/?rate=18%2B
+#### [Prueba de importación de modelo y prueba](https://github.com/roprz/PI_1_Henry/blob/main/ML/Creacion%20del%20modelo/ML.ipynb "creación del modelo de ML")
 
-##### *Nota: Para conocer mas detalles tecnicos acerca de las funciones y sus respectivos parametros puede ingresar a https://qlprmb.deta.dev/docs*
+#### [Función desarrollada con el modelo y función para su deploy](https://github.com/roprz/PI_1_Henry/blob/main/ML/Funcion%20ML/modeloML.ipynb "Función modelo de ML")
 
-
-#### [Link a video explicativo confeccionado para equipo de data analytics](https://www.youtube.com/watch?v=o7A5xAoOQqE "Proyecto Individual data engineer - Henry's bootcamp")
-
-<hr> 
-
-#### Tecnologías utilizadas:
-- Visual studio code
-- Python
-- Deta cloud
-- FastApi
-- Uvicorn
-- Pandas library
-
-  
-<img src="https://visualstudio.microsoft.com/wp-content/uploads/2019/06/vs-code-responsive-01.svg" width="50"/><img src="https://www.python.org/static/community_logos/python-logo.png" width="150"/><img src="https://raw.githubusercontent.com/deta/.github/main/profile/deta_logo_dark.svg" width="250"/><img src="https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png" width="150"/><img src="https://raw.githubusercontent.com/tomchristie/uvicorn/master/docs/uvicorn.png" width="80"/><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Pandas_logo.svg/1920px-Pandas_logo.svg.png" width="150"/>
+### Video de explicación:
+`Ingrese al siguiente URL:` [https://drive.google.com/drive/u/1/folders/14w2LaXqYdRgZt_IkV28jsG9SkKotQdFb](https://drive.google.com/drive/u/1/folders/14w2LaXqYdRgZt_IkV28jsG9SkKotQdFb)
